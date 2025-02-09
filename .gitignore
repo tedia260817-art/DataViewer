@@ -1,0 +1,10 @@
+﻿**/bin
+.vs
+**/obj
+*.user
+pub
+docfx/_site
+NDependOut
+nupkg
+/_site
+pub
