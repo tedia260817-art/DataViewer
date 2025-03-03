@@ -5,6 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://graphqlzero.almansi.me/api") });
+
 
 var app = builder.Build();
 
