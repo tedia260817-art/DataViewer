@@ -1,0 +1,89 @@
+@page "/posts"
+@inject NavigationManager Navigation
+@inject HttpClient Http
+
+<h3>Posts</h3>
+
+<NavLink class="btn btn-primary mb-3" href="/">
+    <span class="bi bi-house-door"></span> Home
+</NavLink>
+
+@if (posts == null)
+{
+    <p>Loading posts...</p>
+}
+else
+{
+    @foreach (var post in posts)
+    {
+        <div class="card mb-2">
+            <div class="card-header" @onclick="() => TogglePost(post)">
+                <h5>@post.Title</h5>
+            </div>
+            @if (post.IsExpanded)
+            {
+                <div class="card-body">
+                    <p>@post.Body</p>
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    private List<Post> posts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        posts = await GetPosts();
+    }
+
+    private async Task<List<Post>> GetPosts()
+    {
+        var query = new
+        {
+            query = @"{
+posts {
+data {
+id
+title
+body
+}
+}
+}"
+        };
+
+        var response = await Http.PostAsJsonAsync("https://graphqlzero.almansi.me/api", query);
+        var result = await response.Content.ReadFromJsonAsync<GraphQLResponse>();
+
+        return result?.Data.Posts.Data ?? new List<Post>();
+    }
+
+    private void TogglePost(Post post)
+    {
+        post.IsExpanded = !post.IsExpanded;
+    }
+
+    private class Post
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Body { get; set; }
+        public bool IsExpanded { get; set; } = false;
+    }
+
+    private class GraphQLResponse
+    {
+        public GraphQLData Data { get; set; }
+    }
+
+    private class GraphQLData
+    {
+        public PostCollection Posts { get; set; }
+    }
+
+    private class PostCollection
+    {
+        public List<Post> Data { get; set; }
+    }
+}
