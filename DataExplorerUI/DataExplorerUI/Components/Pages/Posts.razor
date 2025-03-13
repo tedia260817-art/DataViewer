@@ -1,6 +1,7 @@
 @page "/posts"
 @inject NavigationManager Navigation
 @inject PostService PostService
+@rendermode InteractiveServer
 
 @using DataExplorerModels;
 
@@ -9,15 +10,6 @@
 <NavLink class="btn btn-primary mb-3" href="/">
     <span class="bi bi-house-door"></span> Home
 </NavLink>
-
-<button @onclick="TestClick">Click Me</button>
-
-@code {
-    private void TestClick()
-    {
-        Console.WriteLine("Button clicked!");
-    }
-}
 
 @if (posts == null)
 {
@@ -28,7 +20,7 @@ else
     @foreach (var post in posts)
     {
         <div class="card mb-2">
-            <div class="card-header" @onclick="@(() => Console.WriteLine($"Clicked: {post.Title}"))" style="cursor: pointer;">
+            <div class="card-header" @onclick="@(() => TogglePost(post))" style="cursor: pointer;">
                 <h5>@post.Title</h5>
             </div>
             @if (post.IsExpanded)
@@ -51,7 +43,6 @@ else
 
     private void TogglePost(Post post)
     {
-        Console.WriteLine($"Toggled Post ID: {post.Id}, New State: {post.IsExpanded}");
         post.IsExpanded = !post.IsExpanded;
         StateHasChanged();
     }
