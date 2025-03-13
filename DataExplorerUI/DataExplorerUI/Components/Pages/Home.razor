@@ -3,30 +3,26 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Welcome to DataViewer</h1>
+<h1 class="text-center mt-4">Welcome to DataViewer</h1>
 
-<div class="container text-center mt-4">
+<div class="container text-center mt-5">
     <div class="row justify-content-center">
         <div class="col-6 col-md-3">
-            <div class="card text-center" @onclick="NavigateToAlbums" style="cursor: pointer;">
+            <div class="card text-center p-3" @onclick="NavigateToAlbums"
+                style="cursor: pointer; border: none; background: none;">
                 <div class="card-body">
-                    <span class="bi bi-images" style="font-size: 3rem; display: block;"></span>
+                    <span class="bi bi-folder" style="font-size: 4rem; display: block;"></span>
                     <h5 class="mt-2">Albums</h5>
-                    <button class="btn btn-primary mt-2">
-                        <span class="bi bi-folder" style="margin-right: 5px;"></span> View Albums
-                    </button>
                 </div>
             </div>
         </div>
 
         <div class="col-6 col-md-3">
-            <div class="card text-center" @onclick="NavigateToPosts" style="cursor: pointer;">
+            <div class="card text-center p-3" @onclick="NavigateToPosts"
+                style="cursor: pointer; border: none; background: none;">
                 <div class="card-body">
-                    <span class="bi bi-file-text" style="font-size: 3rem; display: block;"></span>
+                    <span class="bi bi-file-earmark-text" style="font-size: 4rem; display: block;"></span>
                     <h5 class="mt-2">Posts</h5>
-                    <button class="btn btn-success mt-2">
-                        <span class="bi bi-file-earmark-text" style="margin-right: 5px;"></span> View Posts
-                    </button>
                 </div>
             </div>
         </div>
