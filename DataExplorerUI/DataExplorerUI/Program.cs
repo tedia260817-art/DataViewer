@@ -9,6 +9,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddScoped<PostService>();
+builder.Services.AddScoped<AlbumService>();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://graphqlzero.almansi.me/api") });
 
