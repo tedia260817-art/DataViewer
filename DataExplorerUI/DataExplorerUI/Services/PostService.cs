@@ -1,49 +1,33 @@
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using DataExplorerModels;
+using System.Net.Http.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace DataExplorerUI.Services
 {
-    public class PostService 
+    public class PostService
     {
-        private readonly HttpClient _http;
+        private readonly HttpClient _httpClient;
+        private readonly string _postsEndpoint;
 
-        public PostService(HttpClient http)
+        public PostService(HttpClient httpClient, IConfiguration configuration)
         {
-            _http = http;
+            _httpClient = httpClient;
+            _postsEndpoint = configuration["Backend:PostsEndpoint"]
+                ?? throw new InvalidOperationException("Missing configuration: Backend:PostsEndpoint");
         }
 
         public async Task<List<Post>> GetPostsAsync()
         {
-            var query = new
+            try
             {
-                query = @"{
-                    posts {
-                        data {
-                            id
-                            title
-                            body
-                        }
-                    }
-                }"
-            };
-
-            var jsonQuery = JsonSerializer.Serialize(query);
-            var request = new StringContent(jsonQuery, Encoding.UTF8, "application/json");
-
-            var response = await _http.PostAsync("https://graphqlzero.almansi.me/api", request);
-            
-            if (response == null || !response.IsSuccessStatusCode)
-            {
-                return new List<Post>();
+                var posts = await _httpClient.GetFromJsonAsync<List<Post>>(_postsEndpoint);
+                return posts ?? new();
             }
-
-            var result = await response.Content.ReadFromJsonAsync<GraphQLResponse>();
-
-            return result?.Data?.Posts?.Data ?? new List<Post>();
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error fetching posts: {ex.Message}");
+                return new();
+            }
         }
     }
 }
