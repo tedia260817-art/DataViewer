@@ -3,13 +3,17 @@ using System.Net.Http.Json;
 
 namespace DataExplorer.Services
 {
+    
     public class PostGraphQLService
     {
         private readonly HttpClient _httpClient;
+        private readonly string _graphqlEndpoint;
 
-        public PostGraphQLService(HttpClient httpClient)
+        public PostGraphQLService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _graphqlEndpoint = configuration["GraphQL:Endpoint"]
+        ?? throw new InvalidOperationException("GraphQL endpoint is not configured.");
         }
 
         public async Task<List<Post>> FetchPostsAsync()
@@ -27,7 +31,7 @@ namespace DataExplorer.Services
                 }"
             };
 
-            var response = await _httpClient.PostAsJsonAsync("https://graphqlzero.almansi.me/api", query);
+            var response = await _httpClient.PostAsJsonAsync(_graphqlEndpoint, query);
 
             if (!response.IsSuccessStatusCode)
                 return new();

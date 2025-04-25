@@ -1,15 +1,23 @@
 using DataExplorerModels;
 using System.Net.Http.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace DataExplorer.Services
 {
     public class AlbumGraphQLService
     {
         private readonly HttpClient _httpClient;
+        private readonly string _graphqlEndpoint;
+        private readonly string _defaultThumbnailUrl;
 
-        public AlbumGraphQLService(HttpClient httpClient)
+        public AlbumGraphQLService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _graphqlEndpoint = configuration["GraphQL:Endpoint"]
+                ?? throw new InvalidOperationException("GraphQL endpoint is not configured.");
+                _defaultThumbnailUrl = configuration["Album:DefaultThumbnailUrl"]
+        ?? throw new InvalidOperationException("Missing default thumbnail URL.");
+        
         }
 
         public async Task<List<AlbumDto>> FetchAlbumsAsync()
@@ -33,7 +41,7 @@ namespace DataExplorer.Services
                 }"
             };
 
-            var response = await _httpClient.PostAsJsonAsync("https://graphqlzero.almansi.me/api", query);
+            var response = await _httpClient.PostAsJsonAsync(_graphqlEndpoint, query);
             if (!response.IsSuccessStatusCode)
                 return new();
 
@@ -45,7 +53,7 @@ namespace DataExplorer.Services
             {
                 Id = album.Id,
                 Title = album.Title,
-                ThumbnailUrl = $"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWh-hr3PwoUpqvsviNcV8EIxl7Gkcpkvr-JQ&s",
+                ThumbnailUrl = _defaultThumbnailUrl,
                 CreatedBy = album.User?.Username ?? "Unknown",
                 FromCompany = album.User?.Company?.Name ?? "Unknown"
             }).ToList();
